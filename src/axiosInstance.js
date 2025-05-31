@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const apiUrl = `https://285c-103-206-104-58.ngrok-free.app/api`;
+const apiUrl = `https://aura-node-dabhg7dhdxgccchq.centralindia-01.azurewebsites.net/api`;
 
 const axiosInstance = axios.create({
   baseURL: apiUrl,

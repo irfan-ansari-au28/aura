@@ -31,12 +31,11 @@ export default function ProjectList({ selectedProject, setSelectedProject }) {
           name: newProjectName,
           description: 'A project for AI-assisted development',
         };
-        const response = await axiosInstance.post('/project', payload);
-     console.log('response', response.data);
-        const createdProject = response.data;
+        const response = await axiosInstance.post('/projects', payload);
+        const createdProject = response.data?.data;
         const updatedProjects = [createdProject, ...projects];
         setProjects(updatedProjects);
-        // setSelectedProject(createdProject);
+        setSelectedProject(createdProject);
         setNewProjectName('');
         setShowCreateModal(false);
         showToast('Project created successfully!');
@@ -48,28 +47,52 @@ export default function ProjectList({ selectedProject, setSelectedProject }) {
 
   const fetchProjects = async () => {
     try {
-      const response = await axiosInstance.post('/projects');
-      const data = response.data;
-      setProjects(data);
-      setSelectedProject(data[0]);
+      const response = await axiosInstance.get('/projects');
+      const data = response.data?.data;
+      setProjects(Array.isArray(data) ? data : []);
+      setSelectedProject(Array.isArray(data) && data.length > 0 ? data[0] : null);
     } catch (error) {
       console.error('Error fetching projects:', error);
+      setProjects([]);
     }
   }
  useEffect(() => {
      fetchProjects();
-     setSelectedProject(projects[0]);
+     setSelectedProject(projects?.[0]);
  },[])
   return (
     <>
       <div style={{ flex: 1, overflowY: 'auto' }}>
-        {projects.map((project) => (
+        {projects?.map((project) => (
           <Card
-            key={project}
-            sx={{ p: 2, mb: 2, cursor: 'pointer', backgroundColor: selectedProject?.name === project?.name  ? '#e3f2fd' : '#fff', border: selectedProject?.name === project?.name  ? '1px solid #90caf9' : 'none' }}
+            key={project.id || project._id}
+            sx={{
+              p: 1.2,
+              mb: 1.2,
+              boxShadow: 'none',
+              border: selectedProject?.id === project?.id || selectedProject?._id === project?._id
+                ? '1.5px solid #8134af'
+                : '1.5px solid #ececec',
+              backgroundColor: selectedProject?.id === project?.id || selectedProject?._id === project?._id
+                ? 'rgba(129, 52, 175, 0.07)'
+                : 'rgba(245, 248, 250, 0.7)',
+              borderRadius: 2,
+              cursor: 'pointer',
+              transition: 'border 0.2s, background 0.2s',
+            }}
             onClick={() => setSelectedProject(project)}
           >
-            <Typography>{project?.name }</Typography>
+            <Typography
+              sx={{
+                color: selectedProject?.id === project?.id || selectedProject?._id === project?._id ? '#8134af' : '#222',
+                fontWeight: selectedProject?.id === project?.id || selectedProject?._id === project?._id ? 700 : 500,
+                fontSize: 16,
+                letterSpacing: 0.2,
+                px: 0.5,
+              }}
+            >
+              {project?.name}
+            </Typography>
           </Card>
         ))}
       </div>
@@ -77,14 +100,42 @@ export default function ProjectList({ selectedProject, setSelectedProject }) {
      {user.role === 'business_user' && <Button
         variant="contained"
         startIcon={<Plus />}
-        sx={{ mt: 2, width: '100%' }}
+        sx={{
+          mt: 2,
+          width: '100%',
+          background: 'linear-gradient(90deg, #f58529 0%, #dd2a7b 40%, #8134af 70%, #515bd4 100%)',
+          color: '#fff',
+          fontWeight: 600,
+          borderRadius: 2,
+          boxShadow: '0 2px 8px 0 rgba(221, 42, 123, 0.10)',
+          fontSize: 16,
+          letterSpacing: 1,
+          '&:hover': {
+            background: 'linear-gradient(90deg, #515bd4 0%, #8134af 30%, #dd2a7b 70%, #f58529 100%)',
+          },
+        }}
         onClick={() => setShowCreateModal(true)}
       >
         New Project
       </Button> }
 
-      <Dialog open={showCreateModal} onClose={() => setShowCreateModal(false)}>
-        <DialogTitle>Create New Project</DialogTitle>
+      <Dialog open={showCreateModal} onClose={() => setShowCreateModal(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            background: 'rgba(255,255,255,0.98)',
+            boxShadow: 6,
+            p: 2,
+          }
+        }}
+      >
+        <DialogTitle sx={{
+          fontWeight: 700,
+          fontFamily: 'Segoe UI, sans-serif',
+          color: '#8134af',
+          textAlign: 'center',
+          fontSize: 22,
+        }}>Create New Project</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -96,13 +147,40 @@ export default function ProjectList({ selectedProject, setSelectedProject }) {
             value={newProjectName}
             onChange={(e) => setNewProjectName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleCreateProject()}
+            InputProps={{
+              style: {
+                background: '#fbeee6',
+                borderRadius: 8,
+                fontFamily: 'Segoe UI, sans-serif',
+              },
+            }}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowCreateModal(false)} color="secondary">
+        <DialogActions sx={{ justifyContent: 'space-between', px: 3, pb: 2 }}>
+          <Button onClick={() => setShowCreateModal(false)}
+            sx={{
+              color: '#8134af',
+              fontWeight: 600,
+              borderRadius: 2,
+              px: 2,
+              '&:hover': { background: '#f3f0fa' },
+            }}
+          >
             Cancel
           </Button>
-          <Button onClick={handleCreateProject} variant="contained" color="primary">
+          <Button onClick={handleCreateProject} variant="contained"
+            sx={{
+              background: 'linear-gradient(90deg, #f58529 0%, #dd2a7b 40%, #8134af 70%, #515bd4 100%)',
+              color: '#fff',
+              fontWeight: 600,
+              borderRadius: 2,
+              px: 3,
+              boxShadow: '0 2px 8px 0 rgba(221, 42, 123, 0.12)',
+              '&:hover': {
+                background: 'linear-gradient(90deg, #515bd4 0%, #8134af 30%, #dd2a7b 70%, #f58529 100%)',
+              },
+            }}
+          >
             Create
           </Button>
         </DialogActions>
