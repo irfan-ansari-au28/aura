@@ -149,25 +149,24 @@ export default function ChatInterface({ selectedProject }) {
                 borderRadius={3}
                 p={2}
                 sx={{
-                  background: message.role === 'user'
-                    ? 'linear-gradient(90deg, #f58529 0%, #dd2a7b 40%, #8134af 70%, #515bd4 100%)'
-                    : '#f3f0fa',
-                  color: message.role === 'user' ? '#fff' : '#8134af',
-                  boxShadow: message.role === 'user' ? 3 : 1,
+                  background: '#f3f0fa',
+                  color: '#8134af',
+                  border: '1.5px solid #ececec',
+                  boxShadow: 1,
                   fontFamily: 'Segoe UI, sans-serif',
                   fontSize: 16,
                 }}
               >
                 <Box display="flex" alignItems="center" mb={1}>
                   {message.role === 'user' ? (
-                    <User style={{ height: 16, width: 16, marginRight: 8, color: '#fff' }} />
+                    <User style={{ height: 16, width: 16, marginRight: 8, color: '#8134af' }} />
                   ) : (
                     <Bot style={{ height: 16, width: 16, marginRight: 8, color: '#8134af' }} />
                   )}
-                  <Box fontSize={12} fontWeight="fontWeightMedium">
+                  <Box fontSize={12} fontWeight="fontWeightMedium" color="#8134af">
                     {message.role === 'user' ? 'You' : 'Assistant'}
                   </Box>
-                  <Box fontSize={12} ml={2} color={message.role === 'user' ? '#fff' : '#8134af'}>
+                  <Box fontSize={12} ml={2} color="#8134af">
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </Box>
                   {message.role === 'assistant' && (
